@@ -1,4 +1,4 @@
-
+{% raw %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -93,6 +93,7 @@
                         <td>{{ pari.resultat }}</td>
                         <td>{{ pari.gain }}</td>
                         <td>
+                            <a href="/modifier/{{ pari.id }}" class="btn btn-sm btn-warning">✏️ Modifier</a>
                             <a href="/supprimer/{{ pari.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce pari ?')">🗑️</a>
                         </td>
                     </tr>
@@ -104,3 +105,4 @@
 </div>
 </body>
 </html>
+{% endraw %}
