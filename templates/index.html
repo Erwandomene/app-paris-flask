@@ -8,6 +8,7 @@
 <body class="bg-light">
 <div class="container py-4">
     <h1 class="mb-4 text-center">Suivi de Paris Sportifs</h1>
+
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">Ajouter un pari</div>
         <div class="card-body">
@@ -27,12 +28,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Type de pari</label>
-                        <select name="type_pari" class="form-select">
-                            <option>Vainqueur match</option>
-                            <option>Over/Under jeux</option>
-                            <option>Score exact</option>
-                            <option>Handicap sets</option>
-                        </select>
+                        <input type="text" name="type_pari" class="form-control">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Cote</label>
@@ -64,13 +60,14 @@
             </form>
         </div>
     </div>
+
     <div class="card">
         <div class="card-header bg-secondary text-white">Historique des derniers paris</div>
         <div class="card-body">
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>Résultat</th><th>Gains</th>
+                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>Résultat</th><th>Gains</th><th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,6 +80,9 @@
                         <td>{{ pari.mise }}</td>
                         <td>{{ pari.resultat }}</td>
                         <td>{{ pari.gain }}</td>
+                        <td>
+                            <a href="{{ url_for('modifier', pari_id=pari.id) }}" class="btn btn-sm btn-outline-primary">✏️ Modifier</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
