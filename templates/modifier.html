@@ -2,12 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Modifier le pari</title>
+    <title>Modifier un pari</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <div class="container py-4">
     <h2 class="mb-4">Modifier le pari</h2>
+
     <form method="POST">
         <div class="row g-3">
             <div class="col-md-4">
@@ -28,11 +29,11 @@
             </div>
             <div class="col-md-2">
                 <label class="form-label">Cote</label>
-                <input type="number" step="0.01" name="cote" class="form-control" value="{{ pari.cote }}">
+                <input type="number" step="0.01" name="cote" class="form-control" value="{{ pari.cote }}" required>
             </div>
             <div class="col-md-2">
                 <label class="form-label">Mise €</label>
-                <input type="number" step="0.01" name="mise" class="form-control" value="{{ pari.mise }}">
+                <input type="number" step="0.01" name="mise" class="form-control" value="{{ pari.mise }}" required>
             </div>
             <div class="col-md-4">
                 <label class="form-label">Bookmaker</label>
@@ -41,10 +42,10 @@
             <div class="col-md-4">
                 <label class="form-label">Résultat</label>
                 <select name="resultat" class="form-select">
-                    <option {% if pari.resultat == 'Gagné' %}selected{% endif %}>Gagné</option>
-                    <option {% if pari.resultat == 'Perdu' %}selected{% endif %}>Perdu</option>
-                    <option {% if pari.resultat == 'Annulé' %}selected{% endif %}>Annulé</option>
-                    <option {% if pari.resultat == 'En cours' %}selected{% endif %}>En cours</option>
+                    <option {% if pari.resultat == "Gagné" %}selected{% endif %}>Gagné</option>
+                    <option {% if pari.resultat == "Perdu" %}selected{% endif %}>Perdu</option>
+                    <option {% if pari.resultat == "Annulé" %}selected{% endif %}>Annulé</option>
+                    <option {% if pari.resultat == "En cours" %}selected{% endif %}>En cours</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -52,8 +53,8 @@
                 <input type="text" name="commentaire" class="form-control" value="{{ pari.commentaire }}">
             </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">💾 Enregistrer les modifications</button>
-        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">↩️ Retour</a>
+        <button type="submit" class="btn btn-success mt-3">Enregistrer les modifications</button>
+        <a href="/" class="btn btn-secondary mt-3">Annuler</a>
     </form>
 </div>
 </body>
