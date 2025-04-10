@@ -14,10 +14,10 @@
         <div class="card-header bg-info text-white">Statistiques</div>
         <div class="card-body">
             <p><strong>Nombre total de paris :</strong> {{ stats.total }}</p>
-            <p><strong>Taux de rÃ©ussite :</strong> {{ stats.taux_reussite }}%</p>
-            <p><strong>Mises totales :</strong> {{ stats.mise_totale }} â‚¬</p>
-            <p><strong>Gains totaux :</strong> {{ stats.gain_total }} â‚¬</p>
-            <p><strong>Profit net :</strong> {{ stats.profit }} â‚¬</p>
+            <p><strong>Taux de réussite :</strong> {{ stats.taux_reussite }}%</p>
+            <p><strong>Mises totales :</strong> {{ stats.mise_totale }} €</p>
+            <p><strong>Gains totaux :</strong> {{ stats.gain_total }} €</p>
+            <p><strong>Profit net :</strong> {{ stats.profit }} €</p>
         </div>
     </div>
 
@@ -35,7 +35,7 @@
                         <input type="text" name="match" class="form-control" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">CompÃ©tition</label>
+                        <label class="form-label">Compétition</label>
                         <input type="text" name="competition" class="form-control">
                     </div>
                     <div class="col-md-4">
@@ -47,7 +47,7 @@
                         <input type="number" step="0.01" name="cote" class="form-control" required>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Mise â‚¬</label>
+                        <label class="form-label">Mise €</label>
                         <input type="number" step="0.01" name="mise" class="form-control" required>
                     </div>
                     <div class="col-md-4">
@@ -55,11 +55,11 @@
                         <input type="text" name="bookmaker" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">RÃ©sultat</label>
+                        <label class="form-label">Résultat</label>
                         <select name="resultat" class="form-select">
-                            <option>GagnÃ©</option>
+                            <option>Gagné</option>
                             <option>Perdu</option>
-                            <option>AnnulÃ©</option>
+                            <option>Annulé</option>
                             <option>En cours</option>
                         </select>
                     </div>
@@ -79,7 +79,7 @@
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>RÃ©sultat</th><th>Gains</th><th>Action</th>
+                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>Résultat</th><th>Gains</th><th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,7 +93,7 @@
                         <td>{{ pari.resultat }}</td>
                         <td>{{ pari.gain }}</td>
                         <td>
-                            <a href="/supprimer/{{ pari.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce pari ?')">ðŸ—‘ï¸</a>
+                            <a href="/supprimer/{{ pari.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce pari ?')">🗑️</a>
                         </td>
                     </tr>
                 {% endfor %}
