@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,6 +9,17 @@
 <body class="bg-light">
 <div class="container py-4">
     <h1 class="mb-4 text-center">Suivi de Paris Sportifs</h1>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">Statistiques</div>
+        <div class="card-body">
+            <p><strong>Nombre total de paris :</strong> {{ stats.total }}</p>
+            <p><strong>Taux de rÃ©ussite :</strong> {{ stats.taux_reussite }}%</p>
+            <p><strong>Mises totales :</strong> {{ stats.mise_totale }} â‚¬</p>
+            <p><strong>Gains totaux :</strong> {{ stats.gain_total }} â‚¬</p>
+            <p><strong>Profit net :</strong> {{ stats.profit }} â‚¬</p>
+        </div>
+    </div>
 
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">Ajouter un pari</div>
@@ -23,46 +35,31 @@
                         <input type="text" name="match" class="form-control" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Compétition</label>
+                        <label class="form-label">CompÃ©tition</label>
                         <input type="text" name="competition" class="form-control">
                     </div>
                     <div class="col-md-4">
-    <label class="form-label">Sport</label>
-    <select id="sport" class="form-select" onchange="changerTypePari()" required>
-        <option value="">-- Choisir un sport --</option>
-        <option value="football">Football</option>
-        <option value="basketball">Basketball</option>
-        <option value="tennis">Tennis</option>
-        <option value="badminton">Badminton</option>
-        <option value="cyclisme">Cyclisme</option>
-    </select>
-</div>
-
-<div class="col-md-4">
-    <label class="form-label">Type de pari</label>
-    <select id="type_pari" name="type_pari" class="form-select" required>
-        <option value="">-- Sélectionnez un sport d'abord --</option>
-    </select>
-</div>
-
-                    <div class="col-md-2">
-                        <label class="form-label">Cote</label>
-                        <input type="number" name="cote" step="0.01" class="form-control" required>
+                        <label class="form-label">Type de pari</label>
+                        <input type="text" name="type_pari" class="form-control">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Mise €</label>
-                        <input type="number" name="mise" step="0.01" class="form-control" required>
+                        <label class="form-label">Cote</label>
+                        <input type="number" step="0.01" name="cote" class="form-control" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Mise â‚¬</label>
+                        <input type="number" step="0.01" name="mise" class="form-control" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Bookmaker</label>
                         <input type="text" name="bookmaker" class="form-control">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Résultat</label>
+                        <label class="form-label">RÃ©sultat</label>
                         <select name="resultat" class="form-select">
-                            <option>Gagné</option>
+                            <option>GagnÃ©</option>
                             <option>Perdu</option>
-                            <option>Annulé</option>
+                            <option>AnnulÃ©</option>
                             <option>En cours</option>
                         </select>
                     </div>
@@ -77,12 +74,12 @@
     </div>
 
     <div class="card">
-        <div class="card-header bg-secondary text-white">Historique des derniers paris</div>
+        <div class="card-header bg-secondary text-white">Historique des paris</div>
         <div class="card-body">
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>Résultat</th><th>Gains</th><th>Action</th>
+                        <th>Date</th><th>Match</th><th>Type</th><th>Cote</th><th>Mise</th><th>RÃ©sultat</th><th>Gains</th><th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -96,7 +93,7 @@
                         <td>{{ pari.resultat }}</td>
                         <td>{{ pari.gain }}</td>
                         <td>
-                            <a href="{{ url_for('modifier', pari_id=pari.id) }}" class="btn btn-sm btn-outline-primary">✏️ Modifier</a>
+                            <a href="/supprimer/{{ pari.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce pari ?')">ðŸ—‘ï¸</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -105,54 +102,5 @@
         </div>
     </div>
 </div>
-  <script>
-function changerTypePari() {
-    const types = {
-        football: [
-            "1N2", "Double chance", "Score exact", "Buteur",
-            "Mi-temps / Fin de match", "Nombre de buts (Over/Under)",
-            "Les deux équipes marquent", "Combiné football"
-        ],
-        basketball: [
-            "Vainqueur match", "Écart de points", "Score exact",
-            "Nombre total de points", "Pari sur quart-temps", "Pari combiné basketball"
-        ],
-        tennis: [
-            "Vainqueur match", "Nombre de sets", "Score exact",
-            "Handicap sets", "Over/Under jeux", "Premier set gagnant",
-            "Tie-break (oui/non)", "Pari combiné tennis"
-        ],
-        badminton: [
-            "Vainqueur match", "Nombre de sets", "Score exact",
-            "Over/Under points", "Handicap", "Pari combiné badminton"
-        ],
-        cyclisme: [
-            "Vainqueur étape", "Vainqueur course", "Top 3 / Top 10",
-            "Duel entre coureurs", "Maillot distinctif", "Pari combiné cyclisme"
-        ]
-    };
-
-    const sport = document.getElementById("sport").value;
-    const selectType = document.getElementById("type_pari");
-
-    // Vider la liste actuelle
-    selectType.innerHTML = "";
-
-    if (types[sport]) {
-        types[sport].forEach(function(optionText) {
-            const option = document.createElement("option");
-            option.value = optionText;
-            option.text = optionText;
-            selectType.appendChild(option);
-        });
-    } else {
-        const option = document.createElement("option");
-        option.value = "";
-        option.text = "-- Sélectionnez un sport d'abord --";
-        selectType.appendChild(option);
-    }
-}
-</script>
-  
 </body>
 </html>
