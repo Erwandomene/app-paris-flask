@@ -1,12 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for
-app = Flask(__name__)
 
-paris = []
-next_id = 1
+from flask import Flask, render_template, request, redirect, url_for
+import json
+import os
+
+app = Flask(__name__)
+DATA_FILE = "data.json"
+
+# Charger les données
+if os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        paris = json.load(f)
+else:
+    paris = []
+
+next_id = max([p["id"] for p in paris], default=0) + 1
 
 @app.route("/")
 def index():
-    return render_template("index.html", paris=paris)
+    stats = {
+        "total": len(paris),
+        "gagnes": sum(1 for p in paris if p["resultat"] == "Gagné"),
+        "perdus": sum(1 for p in paris if p["resultat"] == "Perdu"),
+        "annules": sum(1 for p in paris if p["resultat"] == "Annulé"),
+        "mise_totale": round(sum(p["mise"] for p in paris), 2),
+        "gain_total": round(sum(p["gain"] for p in paris), 2)
+    }
+    stats["profit"] = stats["gain_total"] - stats["mise_totale"]
+    stats["taux_reussite"] = round(stats["gagnes"] / stats["total"] * 100, 2) if stats["total"] else 0
+    return render_template("index.html", paris=paris, stats=stats)
 
 @app.route("/ajouter", methods=["POST"])
 def ajouter():
@@ -31,35 +52,14 @@ def ajouter():
         pari["gain"] = 0
     paris.append(pari)
     next_id += 1
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(paris, f, indent=4, ensure_ascii=False)
     return redirect(url_for("index"))
 
-@app.route("/modifier/<int:pari_id>", methods=["GET", "POST"])
-def modifier(pari_id):
-    pari = next((p for p in paris if p["id"] == pari_id), None)
-    if not pari:
-        return "Pari introuvable", 404
-
-    if request.method == "POST":
-        pari["date"] = request.form["date"]
-        pari["match"] = request.form["match"]
-        pari["competition"] = request.form["competition"]
-        pari["type"] = request.form["type_pari"]
-        pari["cote"] = float(request.form["cote"])
-        pari["mise"] = float(request.form["mise"])
-        pari["bookmaker"] = request.form["bookmaker"]
-        pari["resultat"] = request.form["resultat"]
-        pari["commentaire"] = request.form["commentaire"]
-
-        if pari["resultat"] == "Gagné":
-            pari["gain"] = round(pari["mise"] * pari["cote"] - pari["mise"], 2)
-        elif pari["resultat"] == "Perdu":
-            pari["gain"] = -pari["mise"]
-        else:
-            pari["gain"] = 0
-
-        return redirect(url_for("index"))
-
-    return render_template("modifier.html", pari=pari)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+@app.route("/supprimer/<int:pari_id>")
+def supprimer(pari_id):
+    global paris
+    paris = [p for p in paris if p["id"] != pari_id]
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(paris, f, indent=4, ensure_ascii=False)
+    return redirect(url_for("index"))
