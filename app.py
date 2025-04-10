@@ -1,25 +1,27 @@
+
 from flask import Flask, render_template, request, redirect, url_for
 from uuid import uuid4
 import json
 import os
+from collections import defaultdict
+from datetime import datetime
 
 app = Flask(__name__)
 DATA_FILE = "data.json"
 
-# Charger les paris depuis le fichier
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r") as f:
         paris = json.load(f)
 else:
     paris = []
 
-# ======================
-# ROUTE PRINCIPALE
-# ======================
 @app.route("/")
 def index():
     total = len(paris)
     nb_gagnes = sum(1 for p in paris if p["resultat"] == "Gagné")
+    nb_perdus = sum(1 for p in paris if p["resultat"] == "Perdu")
+    nb_annules = sum(1 for p in paris if p["resultat"] == "Annulé")
+    nb_encours = sum(1 for p in paris if p["resultat"] == "En cours")
     mise_totale = sum(p["mise"] for p in paris)
     gain_total = sum(p["gain"] for p in paris)
     taux_reussite = round((nb_gagnes / total) * 100, 2) if total > 0 else 0
@@ -28,16 +30,32 @@ def index():
     stats = {
         "total": total,
         "taux_reussite": taux_reussite,
-        "mise_totale": mise_totale,
-        "gain_total": gain_total,
+        "mise_totale": round(mise_totale, 2),
+        "gain_total": round(gain_total, 2),
         "profit": profit
     }
 
-    return render_template("index.html", paris=paris, stats=stats)
+    resultats_count = {
+        "Gagné": nb_gagnes,
+        "Perdu": nb_perdus,
+        "Annulé": nb_annules,
+        "En cours": nb_encours
+    }
 
-# ======================
-# AJOUT D’UN PARI
-# ======================
+    profit_par_mois = defaultdict(float)
+    for p in paris:
+        try:
+            date_obj = datetime.strptime(p["date"], "%Y-%m-%d")
+            mois = date_obj.strftime("%Y-%m")
+            profit_par_mois[mois] += p["gain"]
+        except:
+            pass
+
+    profit_par_mois = dict(sorted(profit_par_mois.items()))
+
+    return render_template("index.html", paris=paris, stats=stats,
+                           resultats=resultats_count, profits=profit_par_mois)
+
 @app.route("/ajouter", methods=["POST"])
 def ajouter():
     pari = {
@@ -52,22 +70,16 @@ def ajouter():
         "resultat": request.form["resultat"],
         "commentaire": request.form["commentaire"]
     }
-
-    # Calcul du gain
     if pari["resultat"] == "Gagné":
         pari["gain"] = round(pari["mise"] * pari["cote"] - pari["mise"], 2)
     elif pari["resultat"] == "Perdu":
         pari["gain"] = -pari["mise"]
     else:
         pari["gain"] = 0
-
     paris.append(pari)
     sauvegarder()
     return redirect(url_for("index"))
 
-# ======================
-# MODIFIER UN PARI
-# ======================
 @app.route("/modifier/<id>", methods=["GET", "POST"])
 def modifier(id):
     pari = next((p for p in paris if p["id"] == id), None)
@@ -85,22 +97,17 @@ def modifier(id):
         pari["resultat"] = request.form["resultat"]
         pari["commentaire"] = request.form["commentaire"]
 
-        # Recalcul gain
         if pari["resultat"] == "Gagné":
             pari["gain"] = round(pari["mise"] * pari["cote"] - pari["mise"], 2)
         elif pari["resultat"] == "Perdu":
             pari["gain"] = -pari["mise"]
         else:
             pari["gain"] = 0
-
         sauvegarder()
         return redirect(url_for("index"))
 
     return render_template("modifier.html", pari=pari)
 
-# ======================
-# SUPPRIMER UN PARI
-# ======================
 @app.route("/supprimer/<id>")
 def supprimer(id):
     global paris
@@ -108,15 +115,9 @@ def supprimer(id):
     sauvegarder()
     return redirect(url_for("index"))
 
-# ======================
-# SAUVEGARDE FICHIER
-# ======================
 def sauvegarder():
     with open(DATA_FILE, "w") as f:
         json.dump(paris, f, indent=4)
 
-# ======================
-# LANCEMENT
-# ======================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
